@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Verify Flag</title>
+    <style>
+        body {
+            color:green;
+            background-color: black;
+            font-size: 30px;
+        }
+        label {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        button {
+            margin: 30px;
+        }
+      /* Center the form on the page */
+      #form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      /* Add some margin to the inputs */
+      input {
+        margin: 10px;
+      }
+
+      /* Add style for the AD and AG elements */
+      #AD,
+      #AG {
+        display: none;
+        position: relative;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 200px;
+        background-color: gray;
+        color: white;
+        font-size: 30px;
+        text-align: center;
+        line-height: 200px;
+      }
+
+      #AG {
+        background-color: green;
+      }
+      #AD {
+        background-color: red;
+      }
+      select,
+      button, 
+      input{
+        font-size: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="form-container">
+      <form>
+        <label for="part-1">flag{</label>
+        <select id="part-1">
+          <option value="S3cret">S3cret</option>
+          <option value="P4ssw0rd">P4ssw0rd</option>
+          <option value="0Pen">0Pen</option>
+        </select>
+        <label for="part-2">_</label>
+        <input type="text" id="part-2">
+        <label for="part-3">_</label>
+        <input type="number" id="part-3">
+        <label>}</label>
+
+        <button type="button" onclick="check()">Submit</button>
+      </form>
+    </div>
+
+    <!-- Add the AD and AG elements -->
+    <div id="AD">Access denied</div>
+    <div id="AG">Access granted</div>
+
+    <script type="module">
+        import init, { verify_flag } from './pkg/wasm_safe.js';
+        let wasm = await init();
+        window.verify_flag = verify_flag;
+      </script>
+    <script>
+        function check() {
+            // Get the value of part-2
+            const part2 = document.getElementById("part-2").value;
+
+            const result = window.verify_flag(part2);
+            console.log(result)
+            if((result & 1) != 0) { console.log("Click on 1");} else {console.log("Nothing on 1")}
+            if((result & 2) != 0) {console.log("Click on 2")} else {console.log("Nothing on 2")}
+            if((result & 4) != 0) {console.log("Click on 3")} else {console.log("Nothing on 3")}
+            // Do something with the result
+            switch(result){
+                case 7:
+                  // Show the AG element and hide the AD element
+                  document.getElementById("AG").style.display = "block";
+                  document.getElementById("AD").style.display = "none";
+                  break;
+                  default:
+                  // Show the AD element and hide the AG element
+                  document.getElementById("AD").style.display = "block";
+                  document.getElementById("AG").style.display = "none";
+                  break;
+            }
+          }
+    </script>
+  </body>
+</html>
